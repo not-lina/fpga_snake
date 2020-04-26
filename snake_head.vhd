@@ -1,3 +1,5 @@
+-- snake_head.vhd
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -21,39 +23,39 @@ architecture Behavioral of snake_head is
 	signal head_pos_y, head_pos_y_next: integer range 0 to 60 := 22;
 	signal moved, moved_next: std_logic;
 
-	type statetype is (init, iwait, up_go, up_wait, down_go, down_wait, 
+	type statetype is (init, iwait, up_go, up_wait, down_go, down_wait,
 							 left_go, left_wait, right_go, right_wait
 	);
 	signal state, nextstate: statetype;
 	type dir is (up_d, down_d, left_d, right_d);
 	signal path, path_next: dir;
-	
+
 	type mv_states is( m_hold, m_ready, m_trigger );
 	signal mv_state, mv_state_next : mv_states := m_hold;
 	signal move, move_next: std_logic := '0';
-	
+
 begin
   move_snake: process(tick, mv_state) begin
 		case(mv_state) is
-				when m_hold => 
-					if(tick = '1') 
+				when m_hold =>
+					if(tick = '1')
 					then mv_state_next <= m_ready;
 					else mv_state_next <= m_hold;
 					end if;
 					move_next <= '0';
-					
-				when m_ready => 
+
+				when m_ready =>
 					mv_state_next <= m_trigger;
 					move_next <= '1';
 
-				when m_trigger => 
-					if(tick = '0') 
+				when m_trigger =>
+					if(tick = '0')
 					then mv_state_next <= m_hold;
 					else mv_state_next <= m_trigger;
 					end if;
 					move_next <= '0';
-				
-				when others => 
+
+				when others =>
 					mv_state_next <= m_hold;
 					move_next <= '0';
 			end case;
@@ -70,7 +72,7 @@ begin
 			  mv_state <= mv_state_next;
 		 end if;
 	end process;
-	
+
 	OUTPUT_DECODE:
     process (state, head_pos_x, head_pos_y, path) begin
         case (state) is
@@ -91,13 +93,13 @@ begin
                 head_pos_y_next <= head_pos_y - 1;
 					 moved_next <= '1';
 					 path_next <= down_d;
-			
+
 				when right_go =>
 					head_pos_x_next <= head_pos_x + 1;
                head_pos_y_next <= head_pos_y;
 					moved_next <= '1';
 					path_next <= right_d;
-					
+
 				when left_go =>
 					head_pos_x_next <= head_pos_x - 1;
                head_pos_y_next <= head_pos_y;
@@ -111,7 +113,7 @@ begin
 					 path_next <= path;
             end case;
     end process;
-	 
+
     NEXT_STATE_DECODE:
     process(state, move, path, UP, DOWN, LEFT, RIGHT, RESET, START) begin
 		if(RESET = '0') then nextstate <= init;
@@ -126,7 +128,7 @@ begin
 		else
         case (state) is
             when init => nextstate <= iwait;
-				
+
             when iwait =>
 					 if(UP='0') then nextstate <= up_go;
 					 elsif (DOWN = '0') then nextstate <= down_go;
@@ -134,40 +136,40 @@ begin
 					 elsif (RIGHT = '0') then nextstate <= right_go;
 					 else nextstate <= iwait;
 					 end if;
-				
+
             when up_go => nextstate <= up_wait;
-					 
+
 				when up_wait =>
 					if(UP='0') then
 						nextstate <= up_wait;
-					else 
+					else
 						nextstate <= iwait;
 					end if;
 
             when down_go => nextstate <= down_wait;
-					 
+
 				when down_wait =>
 					if(DOWN='0') then
 						nextstate <= down_wait;
-					else 
+					else
 						nextstate <= iwait;
 					end if;
-					
+
 				when left_go => nextstate <= left_wait;
-				 
+
 				when left_wait =>
 					if(LEFT='0') then
 						nextstate <= left_wait;
-					else 
+					else
 						nextstate <= iwait;
 					end if;
-					
+
 				when right_go => nextstate <= right_wait;
-	
+
 				when right_wait =>
 					if(RIGHT='0') then
 						nextstate <= right_wait;
-					else 
+					else
 						nextstate <= iwait;
 					end if;
 

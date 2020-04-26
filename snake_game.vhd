@@ -1,3 +1,5 @@
+-- snake_game.vhd
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -21,7 +23,7 @@ entity snake_game is port
  ); end snake_game;
 
 architecture Behavioral of snake_game is
-	-- tile mesh 
+	-- tile mesh
 	constant TILE_SIZE: integer := 8;
 	constant TILES_X: integer := 60;
 	constant TILES_Y: integer := 60;
@@ -29,7 +31,7 @@ architecture Behavioral of snake_game is
 	-- object signals indicate if we are within on eof the objects
 	signal pixels_on, wall_on, grid_on, snake_on: std_logic;
 	signal pixels_rgb, grid_rgb, wall_rgb, snake_rgb: std_logic_vector(7 downto 0);
-	 
+
 	-- Intermediate register telling the exact position on display on screen.
 	signal x : integer range 0 to 1023 := 0;
 	signal y : integer range 0 to 1023 := 0;
@@ -47,7 +49,7 @@ begin
 		  object_on => grid_on,
 		  object_rgb => grid_rgb
     );
-	 
+
 	 landscape_obj: entity work.obj_landscape
     port map(
         clock =>  clock,
@@ -56,7 +58,7 @@ begin
 		  object_on => wall_on,
 		  object_rgb => wall_rgb
     );
-	 
+
 	 snake_obj: entity work.obj_snake
 	 port map(
 		clock =>  clock,
@@ -71,7 +73,7 @@ begin
 		START => START,
 		RESET => RESET
 	 );
-	 
+
 	 bg_obj: entity work.obj_background
 	 port map(
 		clock => clock,
@@ -86,17 +88,17 @@ begin
   y <= y_next;
   tile_x <= x_next / TILE_SIZE;
   tile_y <= y_next / TILE_SIZE;
-  
+
 	display_out: entity work.obj_mux
 	port map(
 		clock => clock,
-		pixels_on => pixels_on, 
-		pixels_rgb => pixels_rgb, 
-		grid_on => grid_on, 
+		pixels_on => pixels_on,
+		pixels_rgb => pixels_rgb,
+		grid_on => grid_on,
 		grid_rgb => grid_rgb,
-		wall_on => wall_on, 
+		wall_on => wall_on,
 		wall_rgb => wall_rgb,
-		snake_on => snake_on, 
+		snake_on => snake_on,
 		snake_rgb => snake_rgb,
 		rgb_out => pixels
 	);

@@ -1,3 +1,5 @@
+-- clock_prescalar.vhd
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
@@ -13,13 +15,13 @@ end ClockPrescaler;
 
 
 architecture Behavioral of ClockPrescaler is
-    signal prescaler: unsigned(23 downto 0) := X"000000"; 
+    signal prescaler: unsigned(23 downto 0) := X"000000";
     signal newClock, divided : std_logic := '0';
 begin
 
     tick <= newClock;
-	 
-	 divideClock: process(clock, divided) begin 
+
+	 divideClock: process(clock, divided) begin
 		if rising_edge(clock) then
 			divided <= not divided;
 		end if;
@@ -28,7 +30,7 @@ begin
     countClock: process(clock, newClock)
     begin
         if rising_edge(clock) and enable = '1' then
-				if(divided = '1') then 
+				if(divided = '1') then
             if(prescaler =  X"BEBC20") then
                 prescaler   <= (others => '0');
                 newClock <= not newClock;
